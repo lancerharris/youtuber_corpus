@@ -40,10 +40,24 @@ def get_video_links_and_titles(channel_url):
 
     return video_data
 
+def fetch_transcript(video_data):
+    transcripts = []
+    for video in video_data:
+        video_id = video['link'].split("v=")[-1]
+        try:
+            transcript = YouTubeTranscriptApi.get_transcript(video_id)
+            # drop start and duration keys from transcript and join text
+            text_transcript = " ".join([line['text'] for line in transcript]).replace("\n", " ")
+            transcripts.append({"video_title": video['title'], "transcript": text_transcript})
+        except Exception as e:
+            transcripts.append({"video_title": video['title'], "transcript": None})
+            print(f"Error fetching transcript: {e}")
+    return transcripts
+
 if __name__ == "__main__":
     youtuber_name = "<youtuber_name>"
     channel_url = f"https://www.youtube.com/{youtuber_name}/videos"
     video_data = get_video_links_and_titles(channel_url)
 
-    for video in video_data:
-       print(f"Title: {video['title']}, Link: {video['link']}")
+    transcripts = fetch_transcript(video_data)
+    print(transcripts[0:3])
