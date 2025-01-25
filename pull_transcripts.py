@@ -1,12 +1,12 @@
 import time
 import json
+import random
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFound
 
 def get_video_links_and_titles(channel_url):
     driver = webdriver.Chrome()
@@ -42,24 +42,31 @@ def get_video_links_and_titles(channel_url):
 
     return video_data
 
-def fetch_transcript(video_data):
+def fetch_transcript(video_data, retries=3):
     transcripts = []
+    print(f"length of video_data: {len(video_data)}")
     for video in video_data:
+
         video_id = video['link'].split("v=")[-1]
-        try:
-            transcript = YouTubeTranscriptApi.get_transcript(video_id)
-            # drop start and duration keys from transcript and join text
-            text_transcript = " ".join([line['text'] for line in transcript]).replace("\n", " ")
-            transcripts.append({"video_title": video['video_title'], "transcript": text_transcript})
-        except TranscriptsDisabled as e:
-            transcripts.append({"video_title": video['video_title'], "transcript": None})
-            print(f"Transcripts are disabled for {video['video_title']}")
-        except NoTranscriptFound as e:
-            transcripts.append({"video_title": video['video_title'], "transcript": None})
-            print(f"No transcript found for {video['video_title']}")
-        except Exception as e:
-            transcripts.append({"video_title": video['video_title'], "transcript": None})
-            print(f"Error fetching transcript: {e}")
+
+        transcript_found = False
+        loop_retries = retries
+        while (not transcript_found) and loop_retries > 0:
+            print(f"retries left: {loop_retries}")
+            # delay between requests to avoid getting blocked
+            time.sleep(random.uniform(2, 4))
+
+            try:
+                transcript = YouTubeTranscriptApi.get_transcript(video_id)
+                # drop start and duration keys from transcript and join text
+                text_transcript = " ".join([line['text'] for line in transcript]).replace("\n", " ")
+                transcripts.append({"video_title": video['video_title'], "transcript": text_transcript})
+                transcript_found = True
+                print(f"Transcript found for video {video['video_title']}, link {video['link']}")
+            except Exception as e:
+                transcripts.append({"video_title": video['video_title'], "transcript": None})
+                loop_retries -= 1
+                print(f"Error fetching transcript for video {video['video_title']}, link {video['link']}")
 
     return transcripts
 
