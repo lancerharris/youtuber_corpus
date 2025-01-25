@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFound
 
 def get_video_links_and_titles(channel_url):
     driver = webdriver.Chrome()
@@ -50,9 +51,16 @@ def fetch_transcript(video_data):
             # drop start and duration keys from transcript and join text
             text_transcript = " ".join([line['text'] for line in transcript]).replace("\n", " ")
             transcripts.append({"video_title": video['title'], "transcript": text_transcript})
+        except TranscriptsDisabled as e:
+            transcripts.append({"video_title": video['title'], "transcript": None})
+            print(f"Transcripts are disabled for {video['title']}")
+        except NoTranscriptFound as e:
+            transcripts.append({"video_title": video['title'], "transcript": None})
+            print(f"No transcript found for {video['title']}")
         except Exception as e:
             transcripts.append({"video_title": video['title'], "transcript": None})
             print(f"Error fetching transcript: {e}")
+
     return transcripts
 
 def save_corpus(youtuber_name, transcripts):
@@ -62,7 +70,7 @@ def save_corpus(youtuber_name, transcripts):
     print(f"Corpus saved to {filename}")
 
 if __name__ == "__main__":
-    youtuber_names = ["<youtuber_name_1>", "<youtuber_name_2>"]
+    youtuber_names = ["@marcobucci"]
     # distinct youtuber names
     youtuber_names = list(set(youtuber_names))
     
