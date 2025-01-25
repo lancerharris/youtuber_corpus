@@ -62,12 +62,17 @@ def save_corpus(youtuber_name, transcripts):
     print(f"Corpus saved to {filename}")
 
 if __name__ == "__main__":
-    youtuber_name = "<youtuber_name>"
-    channel_url = f"https://www.youtube.com/{youtuber_name}/videos"
-    video_data = get_video_links_and_titles(channel_url)
-    print(f"Found {len(video_data)} videos")
-    print(f"Fetching transcripts for {youtuber_name}")
-    transcripts = fetch_transcript(video_data)
-    print(f"Fetched transcripts for {len(transcripts)} videos")
-    print(f'Saving corpus for {youtuber_name}')
-    save_corpus(youtuber_name, transcripts)
+    youtuber_names = ["<youtuber_name_1>", "<youtuber_name_2>"]
+    # distinct youtuber names
+    youtuber_names = list(set(youtuber_names))
+    
+    for youtuber_name in youtuber_names:
+        channel_url = f"https://www.youtube.com/{youtuber_name}/videos"
+        
+        video_data = get_video_links_and_titles(channel_url)
+        
+        print(f"Fetching transcripts for {youtuber_name} from {len(video_data)} videos")
+        transcripts = fetch_transcript(video_data)
+        
+        print(f'Saving corpus for {youtuber_name}')
+        save_corpus(youtuber_name, transcripts)
