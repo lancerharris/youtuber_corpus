@@ -70,7 +70,7 @@ def save_corpus(youtuber_name, transcripts):
     print(f"Corpus saved to {filename}")
 
 if __name__ == "__main__":
-    youtuber_names = ["@marcobucci"]
+    youtuber_names = ["<youtuber_name1>", "<youtuber_name2>", "<youtuber_name3>"]
     # distinct youtuber names
     youtuber_names = list(set(youtuber_names))
     
