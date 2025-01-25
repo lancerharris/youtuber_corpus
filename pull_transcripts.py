@@ -34,7 +34,7 @@ def get_video_links_and_titles(channel_url):
             title = video.find_element(By.CSS_SELECTOR, 'yt-formatted-string#video-title').text
             link = video.find_element(By.CSS_SELECTOR, 'a#video-title-link').get_attribute('href')
 
-            video_data.append({"title": title, "link": link})
+            video_data.append({"video_title": title, "link": link})
         except Exception as e:
             print(f"Error extracting video data: {e}")
 
@@ -50,15 +50,15 @@ def fetch_transcript(video_data):
             transcript = YouTubeTranscriptApi.get_transcript(video_id)
             # drop start and duration keys from transcript and join text
             text_transcript = " ".join([line['text'] for line in transcript]).replace("\n", " ")
-            transcripts.append({"video_title": video['title'], "transcript": text_transcript})
+            transcripts.append({"video_title": video['video_title'], "transcript": text_transcript})
         except TranscriptsDisabled as e:
-            transcripts.append({"video_title": video['title'], "transcript": None})
-            print(f"Transcripts are disabled for {video['title']}")
+            transcripts.append({"video_title": video['video_title'], "transcript": None})
+            print(f"Transcripts are disabled for {video['video_title']}")
         except NoTranscriptFound as e:
-            transcripts.append({"video_title": video['title'], "transcript": None})
-            print(f"No transcript found for {video['title']}")
+            transcripts.append({"video_title": video['video_title'], "transcript": None})
+            print(f"No transcript found for {video['video_title']}")
         except Exception as e:
-            transcripts.append({"video_title": video['title'], "transcript": None})
+            transcripts.append({"video_title": video['video_title'], "transcript": None})
             print(f"Error fetching transcript: {e}")
 
     return transcripts
