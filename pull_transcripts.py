@@ -1,4 +1,5 @@
 import time
+import json
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -54,10 +55,19 @@ def fetch_transcript(video_data):
             print(f"Error fetching transcript: {e}")
     return transcripts
 
+def save_corpus(youtuber_name, transcripts):
+    filename = f"./Corpus/{youtuber_name}_corpus.json"
+    with open(filename, "w", encoding="utf-8") as file:
+        json.dump(transcripts, file, ensure_ascii=False, indent=2)
+    print(f"Corpus saved to {filename}")
+
 if __name__ == "__main__":
     youtuber_name = "<youtuber_name>"
     channel_url = f"https://www.youtube.com/{youtuber_name}/videos"
     video_data = get_video_links_and_titles(channel_url)
-
+    print(f"Found {len(video_data)} videos")
+    print(f"Fetching transcripts for {youtuber_name}")
     transcripts = fetch_transcript(video_data)
-    print(transcripts[0:3])
+    print(f"Fetched transcripts for {len(transcripts)} videos")
+    print(f'Saving corpus for {youtuber_name}')
+    save_corpus(youtuber_name, transcripts)
