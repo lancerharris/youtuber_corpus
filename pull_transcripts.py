@@ -43,15 +43,20 @@ def get_video_links_and_titles(channel_url):
     return video_data
 
 def fetch_transcript(video_data, retries=3):
+    video_data_length = len(video_data)
+
     transcripts = []
-    print(f"length of video_data: {len(video_data)}")
-    for video in video_data:
+
+    for i, video in enumerate(video_data):
 
         video_id = video['link'].split("v=")[-1]
 
         transcript_found = False
         loop_retries = retries
         while (not transcript_found) and loop_retries > 0:
+            if loop_retries == retries:
+                print(f"Fetching transcript for video {i} of {video_data_length}; {video['video_title']}, link {video['link']}")
+            elif loop_retries < retries:
                 # delay between requests to avoid getting blocked
                 # increase the delay with each retry
                 time.sleep(random.uniform(1 + (retries - loop_retries) // 2, 3 + retries - loop_retries))
@@ -63,13 +68,12 @@ def fetch_transcript(video_data, retries=3):
                 text_transcript = " ".join([line['text'] for line in transcript]).replace("\n", " ")
                 transcripts.append({"video_title": video['video_title'], "transcript": text_transcript})
                 transcript_found = True
-                print(f"Transcript found for video {video['video_title']}, link {video['link']}")
             except Exception as e:
                 # append None for transcript on last retry
                 if loop_retries == 1:
                     transcripts.append({"video_title": video['video_title'], "transcript": None})
                 loop_retries -= 1
-                print(f"Error fetching transcript for video {video['video_title']}, link {video['link']}")
+                print(f"Error fetching transcript")
 
     return transcripts
 
@@ -90,7 +94,6 @@ if __name__ == "__main__":
         video_data = get_video_links_and_titles(channel_url)
         
         print(f"Fetching transcripts for {youtuber_name} from {len(video_data)} videos")
-        transcripts = fetch_transcript(video_data)
+        transcripts = fetch_transcript(video_data, retries=7)
         
-        print(f'Saving corpus for {youtuber_name}')
         save_corpus(youtuber_name, transcripts)
