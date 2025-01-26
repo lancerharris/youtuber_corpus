@@ -1,9 +1,10 @@
 # youtuber_corpus
 Create a document of transcripts of a youtubers videos
 
+### Using the Project
 Enter multiple youtuber handles in the pull_transcripts file to get the transcripts of all videos that have transcripts available.
 
-Transcrits are saved to the Corpus directory for future use. Possibly for ingestion into AI
+Transcripts are saved to the Corpus directory for future use. Possibly for ingestion into AI. Could be good to get your favorite tips and techniques for a topic you are interested in.
 
 Requires chrome webdriver to be installed for use with Selenium
 
