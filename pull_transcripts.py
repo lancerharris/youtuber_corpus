@@ -42,7 +42,7 @@ def get_video_links_and_titles(channel_url):
 
     return video_data
 
-def fetch_transcript(video_data, retries=3):
+def fetch_transcript(youtuber_name, video_data, retries=3):
     video_data_length = len(video_data)
 
     transcripts = []
@@ -55,7 +55,7 @@ def fetch_transcript(video_data, retries=3):
         loop_retries = retries
         while (not transcript_found) and loop_retries > 0:
             if loop_retries == retries:
-                print(f"Fetching transcript for video {i} of {video_data_length}; {video['video_title']}, link {video['link']}")
+                print(f"Fetching transcript for {youtuber_name} video {i} of {video_data_length}; {video['video_title']}, link {video['link']}")
             elif loop_retries < retries:
                 # delay between requests to avoid getting blocked
                 # increase the delay with each retry
@@ -94,6 +94,6 @@ if __name__ == "__main__":
         video_data = get_video_links_and_titles(channel_url)
         
         print(f"Fetching transcripts for {youtuber_name} from {len(video_data)} videos")
-        transcripts = fetch_transcript(video_data, retries=7)
+        transcripts = fetch_transcript(youtuber_name, video_data, retries=7)
         
         save_corpus(youtuber_name, transcripts)
