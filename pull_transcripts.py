@@ -65,7 +65,9 @@ def fetch_transcript(video_data, retries=3):
                 transcript_found = True
                 print(f"Transcript found for video {video['video_title']}, link {video['link']}")
             except Exception as e:
-                transcripts.append({"video_title": video['video_title'], "transcript": None})
+                # append None for transcript on last retry
+                if loop_retries == 1:
+                    transcripts.append({"video_title": video['video_title'], "transcript": None})
                 loop_retries -= 1
                 print(f"Error fetching transcript for video {video['video_title']}, link {video['link']}")
 
