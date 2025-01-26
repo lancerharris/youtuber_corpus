@@ -52,9 +52,10 @@ def fetch_transcript(video_data, retries=3):
         transcript_found = False
         loop_retries = retries
         while (not transcript_found) and loop_retries > 0:
-            print(f"retries left: {loop_retries}")
-            # delay between requests to avoid getting blocked
-            time.sleep(random.uniform(2, 4))
+                # delay between requests to avoid getting blocked
+                # increase the delay with each retry
+                time.sleep(random.uniform(1 + (retries - loop_retries) // 2, 3 + retries - loop_retries))
+                print(f"   Retries left: {loop_retries}; Uniform sleep between {1 + (retries - loop_retries) // 2} and {3 + retries - loop_retries} seconds")
 
             try:
                 transcript = YouTubeTranscriptApi.get_transcript(video_id)
